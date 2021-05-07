@@ -20,6 +20,6 @@ fn index() -> Json<AtemCamStatusJson>{
 
 fn main() {
     rocket::ignite()
-        .mount("/", routes![index])
+        .mount("/api", routes![index])
         .launch();
 }
