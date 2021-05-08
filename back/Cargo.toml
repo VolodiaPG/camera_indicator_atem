@@ -1,18 +1,13 @@
 [package]
-name = "camera_indicator_atem"
+name = "warp-websockets-example"
 version = "0.1.0"
-authors = ["Volodia PAROL-GUARINO"]
+authors = ["Mario Zupan <mario@zupzup.org>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-rocket = "0.4.7"
-serde = "1.0"
+tokio = { version = "0.2", features = ["macros", "sync", "rt-threaded"] }
+warp = "0.2"
+serde = {version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-serde_derive = "1.0"
-
-[dependencies.rocket_contrib]
-version = "0.4.7"
-default-features = false
-features = ["json"]
+futures = { version = "0.3", default-features = false }
+uuid = { version = "0.4", features = ["serde", "v4"] }
