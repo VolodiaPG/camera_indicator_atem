@@ -5,7 +5,7 @@ use warp::{http::StatusCode, reply::json, ws::Message, Reply};
 
 #[derive(Deserialize, Debug)]
 pub struct RegisterRequest {
-    user_id: usize,
+    camera_id: usize,
 }
 
 #[derive(Serialize, Debug)]
@@ -20,13 +20,17 @@ pub struct Event {
     message: String,
 }
 
+#[derive(Debug)]
+struct CameraIdOutRangeError;
+impl warp::reject::Reject for CameraIdOutRangeError {}
+
 pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply> {
     clients
         .read()
         .await
         .iter()
         .filter(|(_, client)| match body.user_id {
-            Some(v) => client.user_id == v,
+            Some(v) => client.camera_id == v,
             None => true,
         })
         .filter(|(_, client)| client.topics.contains(&body.topic))
@@ -40,24 +44,34 @@ pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply
 }
 
 pub async fn register_handler(body: RegisterRequest, clients: Clients) -> Result<impl Reply> {
-    let user_id = body.user_id;
+    let camera_id = body.camera_id;
     let uuid = Uuid::new_v4().simple().to_string();
 
-    register_client(uuid.clone(), user_id, clients).await;
-    Ok(json(&RegisterResponse {
-        url: format!("ws://127.0.0.1:8000/ws/{}", uuid),
-    }))
+    match register_client(uuid.clone(), camera_id, clients).await {
+        Ok(()) => {
+            return Ok(json(&RegisterResponse {
+                url: format!("ws://127.0.0.1:8000/ws/{}", uuid),
+            }))
+        }
+        Err(err) => return Err(err),
+    }
 }
 
-async fn register_client(id: String, user_id: usize, clients: Clients) {
+async fn register_client(id: String, camera_id: usize, clients: Clients) -> Result<()> {
+    if camera_id >= 8 {
+        return Err(warp::reject::custom(CameraIdOutRangeError));
+    }
+
     clients.write().await.insert(
         id,
         Client {
-            user_id,
-            topics: vec![String::from("cats")],
+            camera_id,
+            topics: vec![String::from("atem")],
             sender: None,
         },
     );
+
+    Ok(())
 }
 
 pub async fn unregister_handler(id: String, clients: Clients) -> Result<impl Reply> {
