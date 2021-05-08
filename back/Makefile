@@ -20,6 +20,6 @@ lint:
 	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
-	cargo run
+	RUST_LOG=debug cargo run
 
 .PHONY: build test docs style-check lint

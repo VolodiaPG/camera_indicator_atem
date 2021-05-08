@@ -1,3 +1,7 @@
+#[macro_use]
+extern crate log;
+use pretty_env_logger;
+use serde::Serialize;
 use std::collections::HashMap;
 use std::convert::Infallible;
 use std::sync::Arc;
@@ -9,6 +13,7 @@ mod ws;
 
 type Result<T> = std::result::Result<T, Rejection>;
 type Clients = Arc<RwLock<HashMap<String, Client>>>;
+type AtemCameraStatus = Arc<RwLock<AtemCameraStatusData>>;
 
 #[derive(Debug, Clone)]
 pub struct Client {
@@ -17,9 +22,19 @@ pub struct Client {
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
 }
 
+#[derive(Debug, Clone, Serialize)]
+pub struct AtemCameraStatusData {
+    pub preview: usize,
+    pub air: usize,
+}
+
 #[tokio::main]
 async fn main() {
+    pretty_env_logger::init();
+
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
+    let camera_status: AtemCameraStatus =
+        Arc::new(RwLock::new(AtemCameraStatusData { preview: 0, air: 0 }));
 
     let health_route = warp::path!("health").and_then(handler::health_handler);
 
@@ -52,9 +67,41 @@ async fn main() {
         .or(publish)
         .with(warp::cors().allow_any_origin());
 
+    info!("Running server");
+    tokio::spawn(get_atem_status(camera_status.clone(), clients.clone()));
+
     warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
+    info!("Server has stopped.");
 }
 
 fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = Infallible> + Clone {
     warp::any().map(move || clients.clone())
+}
+
+async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients) {
+    loop {
+        let mut current = camera_status.read().await.clone();
+        current.air += 1;
+        current.preview += 1;
+
+        {
+            let mut val = camera_status.write().await;
+            *val = current.clone();
+        }
+
+        let response = serde_json::to_string(&current).unwrap();
+
+        clients
+            .read()
+            .await
+            .iter()
+            // .filter(|(_, client)| client.topics.contains(&body.topic))
+            .for_each(move |(_, client)| {
+                if let Some(sender) = &client.sender {
+                    let _ = sender.send(Ok(Message::text(response.clone())));
+                }
+            });
+
+        tokio::time::delay_for(std::time::Duration::from_millis(100)).await;
+    }
 }
