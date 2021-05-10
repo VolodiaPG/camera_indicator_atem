@@ -7,6 +7,7 @@ use std::convert::Infallible;
 use std::sync::Arc;
 use tokio::sync::{mpsc, RwLock};
 use warp::{ws::Message, Filter, Rejection};
+use structopt::StructOpt;
 
 mod handler;
 mod ws;
@@ -15,6 +16,7 @@ type Result<T> = std::result::Result<T, Rejection>;
 type Clients = Arc<RwLock<HashMap<String, Client>>>;
 type AtemCameraStatus = Arc<RwLock<AtemCameraStatusData>>;
 
+// Web Socket client structure
 #[derive(Debug, Clone)]
 pub struct Client {
     pub camera_id: usize,
@@ -22,14 +24,27 @@ pub struct Client {
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
 }
 
+
+// Struct to describe the status of the atem
 #[derive(Debug, Clone, Serialize)]
 pub struct AtemCameraStatusData {
     pub preview: usize,
     pub air: usize,
 }
 
+#[derive(StructOpt, Debug)]
+#[structopt(name = "websocket-server", rename_all = "kebab-case")]
+/// Start a server that will update regularly the status of the atem's camera.
+/// Connect the related client to it to see the display in pseudo realtime
+struct Opts {
+    /// Path of the script being called to get the atem status
+    #[structopt(short, long)]
+    atem_script: String,
+}
+
 #[tokio::main]
 async fn main() {
+    let opts = Opts::from_args();
     pretty_env_logger::init();
 
     let clients: Clients = Arc::new(RwLock::new(HashMap::new()));
