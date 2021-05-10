@@ -50,7 +50,7 @@ pub async fn register_handler(body: RegisterRequest, clients: Clients) -> Result
     match register_client(uuid.clone(), camera_id, clients).await {
         Ok(()) => {
             return Ok(json(&RegisterResponse {
-                url: format!("ws://127.0.0.1:8000/ws/{}", uuid),
+                url: format!("ws://127.0.0.1:8000/api/ws/{}", uuid),
             }))
         }
         Err(err) => return Err(err),

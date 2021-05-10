@@ -50,6 +50,8 @@ async fn main() {
     let camera_status: AtemCameraStatus =
         Arc::new(RwLock::new(AtemCameraStatusData { preview: 0, air: 0 }));
 
+    let route_prefix = warp::path!("api" / ..);
+
     let health_route = warp::path!("health").and_then(handler::health_handler);
 
     let register = warp::path("register");
@@ -75,11 +77,13 @@ async fn main() {
         .and(with_clients(clients.clone()))
         .and_then(handler::ws_handler);
 
-    let routes = health_route
-        .or(register_routes)
-        .or(ws_route)
-        .or(publish)
-        .with(warp::cors().allow_any_origin());
+    let routes = route_prefix.and(
+        health_route
+            .or(register_routes)
+            .or(ws_route)
+            .or(publish)
+            .with(warp::cors().allow_any_origin()),
+    );
 
     info!("Running server");
     tokio::spawn(get_atem_status(
@@ -111,15 +115,11 @@ async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, scri
 
         let response = serde_json::to_string(&script_response).unwrap();
 
-        clients
-            .read()
-            .await
-            .iter()
-            .for_each(move |(_, client)| {
-                if let Some(sender) = &client.sender {
-                    let _ = sender.send(Ok(Message::text(response.clone())));
-                }
-            });
+        clients.read().await.iter().for_each(move |(_, client)| {
+            if let Some(sender) = &client.sender {
+                let _ = sender.send(Ok(Message::text(response.clone())));
+            }
+        });
 
         tokio::time::delay_for(std::time::Duration::from_millis(100)).await;
     }
