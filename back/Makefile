@@ -20,6 +20,6 @@ lint:
 	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
-	RUST_LOG=debug cargo run
+	RUST_LOG=debug cargo run -- --atem-script ./atem-test.sh
 
 .PHONY: build test docs style-check lint
