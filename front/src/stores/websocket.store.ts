@@ -9,8 +9,6 @@ export const camera_id = writable<number>(10);
 // Readable to output tge received messages
 export const last_message = writable({});
 
-last_message.subscribe(val => console.log('toto'));
-
 // Ws
 let socket: WebSocket;
 

@@ -8,10 +8,8 @@
   let status: CameraAtem;
 
   const unsubscribe = last_message.subscribe((value) => {
-    console.log(JSON.stringify(value));
     if (cameraAtemGuard(value)) {
       status = value;
-      console.log(status);
     }
   });
 
