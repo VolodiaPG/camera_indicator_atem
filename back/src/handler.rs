@@ -68,6 +68,7 @@ async fn register_client(id: String, camera_id: usize, clients: Clients) -> Resu
             camera_id,
             topics: vec![String::from("atem")],
             sender: None,
+            date_creation: std::time::SystemTime::now()
         },
     );
 

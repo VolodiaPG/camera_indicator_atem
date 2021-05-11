@@ -22,10 +22,11 @@ pub struct Client {
     pub camera_id: usize,
     pub topics: Vec<String>,
     pub sender: Option<mpsc::UnboundedSender<std::result::Result<Message, warp::Error>>>,
+    pub date_creation: std::time::SystemTime,
 }
 
 // Struct to describe the status of the atem
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub struct AtemCameraStatusData {
     pub preview: usize,
     pub air: usize,
@@ -101,14 +102,14 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
 }
 
 async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, script: String) {
+    let mut last_time_refreshed = std::time::SystemTime::now();
+
     loop {
-        let mut current = camera_status.read().await.clone();
-        current.air += 1;
-        current.preview += 1;
+        let current = camera_status.read().await.clone();
 
         let script_response = get_atem_results(script.clone());
 
-        {
+        if current != script_response {
             let mut val = camera_status.write().await;
             *val = script_response.clone();
         }
@@ -116,10 +117,15 @@ async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, scri
         let response = serde_json::to_string(&script_response).unwrap();
 
         clients.read().await.iter().for_each(move |(_, client)| {
-            if let Some(sender) = &client.sender {
-                let _ = sender.send(Ok(Message::text(response.clone())));
+            // if duration_since sends an error, that means that value as an argument is earlier thant the one comparing
+            if current != script_response || last_time_refreshed.duration_since(client.date_creation).is_err() {
+                if let Some(sender) = &client.sender {
+                    let _ = sender.send(Ok(Message::text(response.clone())));
+                }
             }
         });
+
+        last_time_refreshed = std::time::SystemTime::now();
 
         tokio::time::delay_for(std::time::Duration::from_millis(100)).await;
     }
