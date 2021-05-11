@@ -4,10 +4,12 @@ const min_id = 1,
   max_id = 8;
 
 // Writable to connect to the id
-export let camera_id = writable<number>(10);
+export const camera_id = writable<number>(10);
 
 // Readable to output tge received messages
-export let last_message = writable(null);
+export const last_message = writable({});
+
+last_message.subscribe(val => console.log('toto'));
 
 // Ws
 let socket: WebSocket;
@@ -22,8 +24,7 @@ let build_websocket = (url: string) => {
 
   socket.onmessage = function (event) {
     console.log(`[message] Data received from server: ${event.data}`);
-    status = { ...JSON.parse(event.data) };
-    last_message.set(status);
+    last_message.set(JSON.parse(event.data));
   };
 
   socket.onclose = function (event) {

@@ -1,31 +1,39 @@
 <script lang="ts">
   import "bootstrap/dist/css/bootstrap.min.css";
-
+  import { onDestroy } from "svelte";
   import InfoDialog from "../components/InfoDialog.svelte";
-  import type { CameraAtem } from "../models/CameraAtem.model";
+  import { CameraAtem, cameraAtemGuard } from "../models/CameraAtem.model";
+  import { last_message } from "../stores/websocket.store";
 
   let status: CameraAtem;
 
+  const unsubscribe = last_message.subscribe((value) => {
+    console.log(JSON.stringify(value));
+    if (cameraAtemGuard(value)) {
+      status = value;
+      console.log(status);
+    }
+  });
+
   let camera_id;
 
-  // onMount(async () => {
-  //   const data = await fetch("/api/register");
-  //   console.log(data);
-
-  //   status = { ...(((await data.json()) as unknown) as CameraAtem) }; // TODO Change this thing !!!
-  // });
-
-  // $: {
-  //   // if the id changes
-  //   void register_new_ws(camera_id);
-  // }
+  onDestroy(unsubscribe);
 </script>
 
-<main>
-  <h1>Preview => {status?.preview}</h1>
-  <h1>Air => {status?.air}</h1>
-  <h1>Id => {camera_id}</h1>
-  <svelte:component this={InfoDialog} bind:camera_id />
+<main
+  class:bg-danger={status?.air === camera_id}
+  class:bg-success={status?.preview === camera_id}
+>
+  <div class="fixed-top m-1 top-bar text-secondary">
+    <span>Preview: {status?.preview}</span>
+    <span class="sep" />
+    <span>air: {status?.air} </span>
+    <span class="sep" />
+    <span>my ID: {camera_id} </span>
+  </div>
+  <div class="bottom-right m-4">
+    <svelte:component this={InfoDialog} bind:camera_id />
+  </div>
 </main>
 
 <style>
@@ -34,13 +42,22 @@
     padding: 1em;
     max-width: 240px;
     margin: 0 auto;
+    background-color: black;
   }
 
-  h1 {
+  .sep {
+    margin-left: 2em;
+  }
+  .top-bar {
     color: #ff3e00;
     text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
+    font-size: 1em;
+  }
+
+  .bottom-right {
+    position: fixed;
+    bottom: 0;
+    right: 0;
   }
 
   @media (min-width: 640px) {
