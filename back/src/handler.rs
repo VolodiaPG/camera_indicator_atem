@@ -16,7 +16,7 @@ pub struct RegisterResponse {
 #[derive(Deserialize, Debug)]
 pub struct Event {
     topic: String,
-    user_id: Option<usize>,
+    camera_id: Option<usize>,
     message: String,
 }
 
@@ -29,7 +29,7 @@ pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply
         .read()
         .await
         .iter()
-        .filter(|(_, client)| match body.user_id {
+        .filter(|(_, client)| match body.camera_id {
             Some(v) => client.camera_id == v,
             None => true,
         })
