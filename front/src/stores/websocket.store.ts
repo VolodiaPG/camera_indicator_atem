@@ -21,8 +21,13 @@ let build_websocket = (url: string) => {
   };
 
   socket.onmessage = function (event) {
-    console.log(`[message] Data received from server: ${event.data}`);
-    last_message.set(JSON.parse(event.data));
+    try {
+      const data = JSON.parse(event.data);
+      console.log(`[message] Data received from server (json): ${event.data}`);
+      last_message.set(data);
+    } catch {
+      console.log(`[message] Data received from server (NOT json): ${event.data}`);
+    }
   };
 
   socket.onclose = function (event) {

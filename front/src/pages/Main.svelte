@@ -1,52 +1,26 @@
 <script lang="ts">
   import "bootstrap/dist/css/bootstrap.min.css";
-  import { Button } from "sveltestrap";
-  import { onDestroy } from "svelte";
-  import Alert from "../components/Alert.svelte";
   import InfoDialog from "../components/InfoDialog.svelte";
+  import Notifications from "../components/Notifications.svelte";
   import { CameraAtem, cameraAtemGuard } from "../models/CameraAtem.model";
-  import type { Message } from "../models/Message.model";
   import { last_message } from "../stores/websocket.store";
-
-  let status: CameraAtem;
-
-  const unsubscribe = last_message.subscribe((value) => {
-    if (cameraAtemGuard(value)) {
-      status = value;
-    }
-  });
 
   let camera_id;
 
-  onDestroy(unsubscribe);
-
-  let ii = 0;
-  let message: Message;
-  const handleClick = () => {
-    message = {
-      color: "info",
-      text: `totot${++ii}`,
-      timeout: 2,
-    };
+  const get_atem = (obj: unknown): CameraAtem | undefined => {
+    if (cameraAtemGuard(obj)) return obj;
+    return undefined;
   };
 </script>
 
 <main
-  class:bg-danger={status?.air === camera_id}
-  class:bg-success={status?.preview === camera_id}
+  class:bg-danger={get_atem($last_message)?.air === camera_id}
+  class:bg-success={get_atem($last_message)?.preview === camera_id}
 >
-  <div class="fixed-top m-1 top-bar text-secondary">
-    <span>Preview: {status?.preview}</span>
-    <span class="sep" />
-    <span>air: {status?.air} </span>
-    <span class="sep" />
-    <span>my ID: {camera_id} </span>
-  </div>
-  <div class="bottom-right m-4">
+  <div class="top-right m-4">
     <svelte:component this={InfoDialog} bind:camera_id />
   </div>
-  <svelte:component this={Alert} bind:message />
-  <Button on:click={handleClick}>Test</Button>
+  <svelte:component this={Notifications} />
 </main>
 
 <style>
@@ -58,18 +32,9 @@
     background-color: black;
   }
 
-  .sep {
-    margin-left: 2em;
-  }
-  .top-bar {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 1em;
-  }
-
-  .bottom-right {
+  .top-right {
     position: fixed;
-    bottom: 0;
+    top: 0;
     right: 0;
   }
 

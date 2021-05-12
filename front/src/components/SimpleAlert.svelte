@@ -41,14 +41,13 @@
       create_timer();
     }
   }
-
 </script>
 
 <main>
   {#if displayed_message !== undefined}
     <Alert color={displayed_message.color}>
-      {displayed_message.text}</Alert
-    >
+      <span>{displayed_message.text}</span>
+    </Alert>
   {/if}
 </main>
 
