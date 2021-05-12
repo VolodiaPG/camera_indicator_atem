@@ -7,10 +7,12 @@
     "cross-env": "^7.0.3",
     "css-loader": "^5.0.1",
     "mini-css-extract-plugin": "^1.3.4",
+    "page": "^1.11.6",
     "svelte": "^3.38.2",
     "svelte-check": "^1.0.46",
     "svelte-loader": "^3.0.0",
     "svelte-preprocess": "^4.3.0",
+    "sveltestrap": "^4.2.1",
     "ts-loader": "^8.0.4",
     "tslib": "^2.0.1",
     "typescript": "^4.0.3",
@@ -20,11 +22,10 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "dev": "webpack serve --content-base public",
+    "dev": "webpack serve --content-base public --history-api-fallback",
     "validate": "svelte-check"
   },
   "dependencies": {
-    "bootstrap": "^5.0.0",
-    "sveltestrap": "^4.2.1"
+    "bootstrap": "^5.0.0"
   }
 }
