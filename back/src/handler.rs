@@ -58,7 +58,7 @@ pub async fn register_handler(body: RegisterRequest, clients: Clients) -> Result
 }
 
 async fn register_client(id: String, camera_id: usize, clients: Clients) -> Result<()> {
-    if camera_id >= 8 {
+    if camera_id > 8 {
         return Err(warp::reject::custom(CameraIdOutRangeError));
     }
 
