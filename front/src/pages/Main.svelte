@@ -1,8 +1,11 @@
 <script lang="ts">
   import "bootstrap/dist/css/bootstrap.min.css";
+  import { Button } from "sveltestrap";
   import { onDestroy } from "svelte";
+  import Alert from "../components/Alert.svelte";
   import InfoDialog from "../components/InfoDialog.svelte";
   import { CameraAtem, cameraAtemGuard } from "../models/CameraAtem.model";
+  import type { Message } from "../models/Message.model";
   import { last_message } from "../stores/websocket.store";
 
   let status: CameraAtem;
@@ -16,6 +19,16 @@
   let camera_id;
 
   onDestroy(unsubscribe);
+
+  let ii = 0;
+  let message: Message;
+  const handleClick = () => {
+    message = {
+      color: "info",
+      text: `totot${++ii}`,
+      timeout: 2,
+    };
+  };
 </script>
 
 <main
@@ -32,6 +45,8 @@
   <div class="bottom-right m-4">
     <svelte:component this={InfoDialog} bind:camera_id />
   </div>
+  <svelte:component this={Alert} bind:message />
+  <Button on:click={handleClick}>Test</Button>
 </main>
 
 <style>
