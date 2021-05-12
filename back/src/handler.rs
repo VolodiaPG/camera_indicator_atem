@@ -43,14 +43,18 @@ pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply
     Ok(StatusCode::OK)
 }
 
-pub async fn register_handler(body: RegisterRequest, clients: Clients) -> Result<impl Reply> {
+pub async fn register_handler(
+    body: RegisterRequest,
+    clients: Clients,
+    url: String,
+) -> Result<impl Reply> {
     let camera_id = body.camera_id;
     let uuid = Uuid::new_v4().simple().to_string();
 
     match register_client(uuid.clone(), camera_id, clients).await {
         Ok(()) => {
             return Ok(json(&RegisterResponse {
-                url: format!("ws://127.0.0.1:8000/api/ws/{}", uuid),
+                url: format!("{}/{}", url, uuid),
             }))
         }
         Err(err) => return Err(err),
@@ -68,7 +72,7 @@ async fn register_client(id: String, camera_id: usize, clients: Clients) -> Resu
             camera_id,
             topics: vec![String::from("atem")],
             sender: None,
-            date_creation: std::time::SystemTime::now()
+            date_creation: std::time::SystemTime::now(),
         },
     );
 

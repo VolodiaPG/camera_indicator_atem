@@ -2,9 +2,9 @@
 extern crate log;
 use pretty_env_logger;
 use serde::{Deserialize, Serialize};
-use std::convert::Infallible;
 use std::sync::Arc;
 use std::{collections::HashMap, process::Command};
+use std::{convert::Infallible, net::Ipv4Addr};
 use structopt::StructOpt;
 use tokio::sync::{mpsc, RwLock};
 use warp::{ws::Message, Filter, Rejection};
@@ -40,6 +40,12 @@ struct Opts {
     /// Path of the script being called to get the atem status
     #[structopt(short, long)]
     atem_script: String,
+    /// Ip address of this server
+    #[structopt(short, long, default_value = "127.0.0.1")]
+    ip: String,
+    /// Port of this server
+    #[structopt(short, long, default_value = "8000")]
+    port: u16,
 }
 
 #[tokio::main]
@@ -53,6 +59,8 @@ async fn main() {
 
     let route_prefix = warp::path!("api" / ..);
 
+    let websocket_url = format!("ws://{}:{}/api/ws/", opts.ip, opts.port);
+
     let health_route = warp::path!("health").and_then(handler::health_handler);
 
     let register = warp::path("register");
@@ -60,6 +68,7 @@ async fn main() {
         .and(warp::post())
         .and(warp::body::json())
         .and(with_clients(clients.clone()))
+        .and(with_url(websocket_url.clone()))
         .and_then(handler::register_handler)
         .or(register
             .and(warp::delete())
@@ -93,12 +102,17 @@ async fn main() {
         opts.atem_script.clone(),
     ));
 
-    warp::serve(routes).run(([127, 0, 0, 1], 8000)).await;
+    let ip: Ipv4Addr = opts.ip.parse().unwrap();
+    warp::serve(routes).run((ip, opts.port)).await;
     info!("Server has stopped.");
 }
 
 fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = Infallible> + Clone {
     warp::any().map(move || clients.clone())
+}
+
+fn with_url(url: String) -> impl Filter<Extract = (String,), Error = Infallible> + Clone {
+    warp::any().map(move || url.clone())
 }
 
 async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, script: String) {
@@ -118,7 +132,11 @@ async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, scri
 
         clients.read().await.iter().for_each(move |(_, client)| {
             // if duration_since sends an error, that means that value as an argument is earlier thant the one comparing
-            if current != script_response || last_time_refreshed.duration_since(client.date_creation).is_err() {
+            if current != script_response
+                || last_time_refreshed
+                    .duration_since(client.date_creation)
+                    .is_err()
+            {
                 if let Some(sender) = &client.sender {
                     let _ = sender.send(Ok(Message::text(response.clone())));
                 }
