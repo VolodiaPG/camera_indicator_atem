@@ -7,9 +7,13 @@
 
   let camera_id;
 
+  let saved_message: CameraAtem;
+
   const get_atem = (obj: unknown): CameraAtem | undefined => {
-    if (cameraAtemGuard(obj)) return obj;
-    return undefined;
+    if (cameraAtemGuard(obj)){
+      saved_message = obj;
+    };
+    return saved_message;
   };
 </script>
 
