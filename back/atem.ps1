@@ -5,8 +5,13 @@ $atem.GetSwitcherLibVersion()
 
 $ME = $atem.GetMEs()
 $uri = 'http://localhost:8000/api/atem'
-while ($true) {
+$last_data = ""
+while ($true)
+{
     $data = "{`"air`": $($me[0].Program), `"preview`": $($me[0].Preview)}"
-    Invoke-WebRequest -Uri $uri -Body $data -ContentType 'application/json' -Method POST -UseBasicParsing
+    if ($data -ne $last_data){
+        Invoke-WebRequest -Uri $uri -Body $data -ContentType 'application/json' -Method POST -UseBasicParsing
+        $last_data = $data
+    }
     Start-Sleep -Milliseconds 10  
 } 
