@@ -1,10 +1,11 @@
 <script lang="ts">
   import "bootstrap/dist/css/bootstrap.min.css";
-  import { onDestroy } from "svelte";
+  import { Button } from "sveltestrap";
   import InfoDialog from "../components/InfoDialog.svelte";
   import Notifications from "../components/Notifications.svelte";
   import { CameraAtem, cameraAtemGuard } from "../models/CameraAtem.model";
   import { last_message } from "../stores/websocket.store";
+  import NoSleep from "nosleep.js";
 
   let camera_id;
 
@@ -17,31 +18,15 @@
     return saved_message;
   };
 
-  // let wakeLock = null;
+  const noSleep = new NoSleep();
 
-  // // keep screen on
-  // if ("wakeLock" in navigator) {
-  //   const isSupported = true;
-  //   console.log("Screen Wake Lock API supported!");
-  //   // Create a reference for the Wake Lock.
-
-  //   // create an async function to request a wake lock
-  //   try {
-  //     wakeLock = await navigator.wakeLock.request("screen");
-  //     console.log("Wake Lock is active!");
-  //   } catch (err) {
-  //     // The Wake Lock request has failed - usually system related, such as battery.
-  //    console.warn(`${err.name}, ${err.message}`);
-  //   }
-  // } else {
-  //   console.log.warn("Wake lock is not supported by this browser.");
-  // }
-
-  // onDestroy(() => {
-  //   wakeLock.release().then(() => {
-  //     wakeLock = null;
-  //   });
-  // });
+  const wakelock = () => {
+    if (!noSleep.isEnabled){
+      noSleep.enable();
+    }else{
+      noSleep.disable();
+    }
+  };
 </script>
 
 <main
@@ -50,6 +35,7 @@
 >
   <div class="top-right m-4">
     <svelte:component this={InfoDialog} bind:camera_id />
+    <Button on:click={wakelock}>Wakelock</Button>
   </div>
   <svelte:component this={Notifications} />
 </main>
