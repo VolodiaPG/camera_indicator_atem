@@ -8,9 +8,9 @@
     CardBody,
     CardHeader,
     Button,
-    Row,
-    Container,
-    Col,
+    InputGroup,
+    InputGroupAddon,
+    InputGroupText,
   } from "sveltestrap";
   import { cameraAtemGuard } from "../models/CameraAtem.model";
   import type { Message } from "../models/Message.model";
@@ -20,6 +20,7 @@
   let message: string;
   let timeout: string = "4";
   let cam_status: string = "⚫";
+  let cam_status_color: "dark" | "danger" | "success" = "dark";
 
   const unsubscribe = last_message.subscribe((val: unknown) => {
     if (cameraAtemGuard(val)) {
@@ -29,11 +30,14 @@
       }
       if (val.air === camera_id) {
         cam_status = "🔴";
+        cam_status_color = "danger";
         return;
       } else if (val.preview === camera_id) {
+        cam_status_color = "success";
         cam_status = "🟢";
         return;
       }
+      cam_status_color = "dark";
       cam_status = "⚫";
     }
   });
@@ -78,28 +82,37 @@
 </script>
 
 <main>
-  <Card>
+  <Card color={cam_status_color} inverse>
     <CardHeader
       >{cam_status}
       {get_title(camera_id)}</CardHeader
     >
     <CardBody>
+      <Label>Message</Label>
       <div>
-        <Label>Message</Label>
-        <div class="input-group">
-          <Input plaintext bind:value={message} on:keypress={on_key_press} />
-          <Input
-            plaintext
-            type="number"
-            bind:value={timeout}
-            on:keypress={on_key_press}
-          />
-        </div>
+        <InputGroup>
+          <Input bind:value={message} on:keypress={on_key_press} />
+          <InputGroupAddon addonType="append">
+            <InputGroupText>
+              <div class="limit-width">
+                <Input
+                  addon
+                  type="number"
+                  bind:value={timeout}
+                  on:keypress={on_key_press}
+                />
+              </div>
+            </InputGroupText>
+          </InputGroupAddon>
+        </InputGroup>
         <Button on:click={send_message}>Send</Button>
-      </div></CardBody
-    >
+      </div>
+    </CardBody>
   </Card>
 </main>
 
 <style>
+  .limit-width {
+    max-width: 50pt;
+  }
 </style>
