@@ -1,4 +1,4 @@
-use crate::{ws, Client, Clients, Result};
+use crate::{AtemCameraStatus, AtemCameraStatusData, Client, Clients, Result, send_status, ws};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use warp::{http::StatusCode, reply::json, ws::Message, Reply};
@@ -43,6 +43,12 @@ pub async fn publish_handler(body: Event, clients: Clients) -> Result<impl Reply
     Ok(StatusCode::OK)
 }
 
+
+pub async fn publish_atem_status_handler(body: AtemCameraStatusData, clients: Clients, atem_status: AtemCameraStatus) -> Result<impl Reply> {
+    send_status(atem_status, clients, body).await;
+    Ok(StatusCode::OK)
+}
+
 pub async fn register_handler(
     body: RegisterRequest,
     clients: Clients,
@@ -54,7 +60,7 @@ pub async fn register_handler(
     match register_client(uuid.clone(), camera_id, clients).await {
         Ok(()) => {
             return Ok(json(&RegisterResponse {
-                url: format!("{}/{}", url, uuid),
+                url: format!("{}{}", url, uuid),
             }))
         }
         Err(err) => return Err(err),

@@ -20,6 +20,6 @@ lint:
 	cargo clippy --all-targets --all-features -- -D warnings
 
 dev:
-	RUST_LOG=debug cargo run -- --atem-script ./atem-test.sh
+	cargo run -- --atem-script .\atem-test.ps1 --ip 192.168.137.1 --port 8000
 
 .PHONY: build test docs style-check lint

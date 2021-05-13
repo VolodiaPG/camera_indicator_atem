@@ -25,3 +25,7 @@ curl -X POST 'http://localhost:8000/publish' \
     -d '{"user_id": 1, "topic": "cats", "message": "are awesome"}'
 ```
 
+## ATEM
+
+To start the ATEM, the script `atem.ps1` needs to be called from and admin powershell using the command `powershell -Command .\atem.ps1` (type this inside the powershell). it executes powershell to recreate a new environment.
+
