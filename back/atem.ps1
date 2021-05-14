@@ -13,5 +13,5 @@ while ($true)
         Invoke-WebRequest -Uri $uri -Body $data -ContentType 'application/json' -Method POST -UseBasicParsing
         $last_data = $data
     }
-    Start-Sleep -Milliseconds 10  
+    Start-Sleep -Milliseconds 30  
 } 
