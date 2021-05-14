@@ -11,6 +11,8 @@
     InputGroup,
     InputGroupAddon,
     InputGroupText,
+    ButtonGroup,
+    Container,
   } from "sveltestrap";
   import { cameraAtemGuard } from "../models/CameraAtem.model";
   import type { Message } from "../models/Message.model";
@@ -19,6 +21,7 @@
   export let camera_id: number;
   let message: string;
   let timeout: string = "4";
+  let color: "info" | "warning" | "success" | "danger";
   let cam_status: string = "⚫";
   let cam_status_color: "dark" | "danger" | "success" = "dark";
 
@@ -44,10 +47,14 @@
 
   onDestroy(unsubscribe);
 
-  const send_message = () => {
+  const send_message = (
+    message: string,
+    timeout: number,
+    color: "danger" | "warning" | "info" | "success"
+  ) => {
     const message_to_send: Message = {
-      color: "info",
-      timeout: parseInt(timeout),
+      color: color,
+      timeout: timeout,
       text: message,
     };
 
@@ -77,7 +84,7 @@
   };
 
   const on_key_press = (e: { charCode }) => {
-    if (e.charCode === 13) send_message();
+    if (e.charCode === 13) send_message(message, parseInt(timeout), "info");
   };
 </script>
 
@@ -89,6 +96,34 @@
     >
     <CardBody>
       <Label>Message</Label>
+      <div class="mb-2 mt-2">
+        <ButtonGroup>
+          <Button
+            on:click={() => send_message("👍", 7, "success")}
+            color="success">👍</Button
+          >
+          <Button
+            on:click={() => send_message("👎", 7, "danger")}
+            color="danger">👎</Button
+          >
+          <Button
+            on:click={() => send_message("🔎 +", 7, "warning")}
+            color="warning">🔎 +</Button
+          >
+          <Button
+            on:click={() => send_message("🔎 -", 7, "warning")}
+            color="warning">🔎 -</Button
+          >
+          <Button
+            on:click={() => send_message("⬅️", 7, "warning")}
+            color="warning">⬅️</Button
+          >
+          <Button
+            on:click={() => send_message("➡️", 7, "warning")}
+            color="warning">➡️</Button
+          >
+        </ButtonGroup>
+      </div>
       <div>
         <InputGroup>
           <Input bind:value={message} on:keypress={on_key_press} />
@@ -105,7 +140,10 @@
             </InputGroupText>
           </InputGroupAddon>
         </InputGroup>
-        <Button on:click={send_message}>Send</Button>
+        <Button
+          on:click={() => send_message(message, parseInt(timeout), "info")}
+          >Send</Button
+        >
       </div>
     </CardBody>
   </Card>
