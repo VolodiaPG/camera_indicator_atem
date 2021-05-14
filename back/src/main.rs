@@ -2,9 +2,9 @@
 extern crate log;
 use pretty_env_logger;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::convert::Infallible;
 use std::sync::Arc;
-use std::{collections::HashMap, process::Command};
-use std::{convert::Infallible};
 use structopt::StructOpt;
 use tokio::sync::{mpsc, RwLock};
 use warp::{ws::Message, Filter, Rejection};
@@ -80,7 +80,7 @@ async fn main() {
         .and(warp::body::json())
         .and(with_clients(clients.clone()))
         .and_then(handler::publish_handler);
-    
+
     let publish_atem = warp::path!("atem")
         .and(warp::body::json())
         .and(with_clients(clients.clone()))
@@ -103,11 +103,6 @@ async fn main() {
     );
 
     info!("Running server");
-    tokio::spawn(get_atem_status(
-        camera_status.clone(),
-        clients.clone(),
-        opts.atem_script.clone(),
-    ));
 
     warp::serve(routes).run(([0, 0, 0, 0], opts.port)).await;
     info!("Server has stopped.");
@@ -117,7 +112,9 @@ fn with_clients(clients: Clients) -> impl Filter<Extract = (Clients,), Error = I
     warp::any().map(move || clients.clone())
 }
 
-fn with_atem_status(status: AtemCameraStatus) -> impl Filter<Extract = (AtemCameraStatus,), Error = Infallible> + Clone {
+fn with_atem_status(
+    status: AtemCameraStatus,
+) -> impl Filter<Extract = (AtemCameraStatus,), Error = Infallible> + Clone {
     warp::any().map(move || status.clone())
 }
 
@@ -125,21 +122,11 @@ fn with_url(url: String) -> impl Filter<Extract = (String,), Error = Infallible>
     warp::any().map(move || url.clone())
 }
 
-async fn get_atem_status(camera_status: AtemCameraStatus, clients: Clients, script: String) {
-    // let mut last_time_refreshed = std::time::SystemTime::now();
-
-    loop {
-        let script_response = get_atem_results(script.clone());
-
-        send_status(camera_status.clone(), clients.clone(), script_response).await;
-
-        // last_time_refreshed = std::time::SystemTime::now();
-
-        tokio::time::delay_for(std::time::Duration::from_millis(100)).await;
-    }
-}
-
-async fn send_status(camera_status: AtemCameraStatus,  clients: Clients, new_status: AtemCameraStatusData){
+async fn send_status(
+    camera_status: AtemCameraStatus,
+    clients: Clients,
+    new_status: AtemCameraStatusData,
+) {
     let current = camera_status.read().await.clone();
 
     if current != new_status {
@@ -157,35 +144,4 @@ async fn send_status(camera_status: AtemCameraStatus,  clients: Clients, new_sta
             }
         }
     });
-}
-
-fn get_atem_results(script: String) -> AtemCameraStatusData {
-    let output = if cfg!(target_os = "windows") {
-        Command::new("cmd").arg("/C").arg(script.clone()).output()
-    } else {
-        Command::new("sh").arg("-c").arg(script.clone()).output()
-    }
-    .expect(
-        &format!(
-            "failed to execute process from script {}",
-            &script.clone()[..]
-        )[..],
-    );
-
-    if !output.status.success() {
-        warn!(
-            "Calling the script {} resulted in status {}",
-            script, output.status
-        );
-    }
-
-    if output.stderr.len() > 0 {
-        warn!(
-            "Calling the script {} resulted in stderr: {}",
-            script,
-            String::from_utf8(output.stderr.clone()).unwrap()
-        );
-    }
-
-    serde_json::from_str(&String::from_utf8(output.stdout).unwrap()[..]).unwrap()
 }
