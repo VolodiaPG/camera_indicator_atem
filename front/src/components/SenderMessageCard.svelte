@@ -48,14 +48,14 @@
   onDestroy(unsubscribe);
 
   const send_message = (
-    message: string,
+    message_local: string,
     timeout: number,
     color: "danger" | "warning" | "info" | "success"
   ) => {
     const message_to_send: Message = {
       color: color,
       timeout: timeout,
-      text: message,
+      text: message_local,
     };
 
     const message_wrapper = {
