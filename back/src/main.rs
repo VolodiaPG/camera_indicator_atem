@@ -93,14 +93,22 @@ async fn main() {
         .and(with_clients(clients.clone()))
         .and_then(handler::ws_handler);
 
-    let routes = route_prefix.and(
+    let api_routes = route_prefix.and(
         health_route
             .or(register_routes)
             .or(ws_route)
             .or(publish)
             .or(publish_atem)
+            .recover(recover_api) // all other mappings that start with /api will be 404s
             .with(warp::cors().allow_any_origin()),
     );
+
+    // route to serve the static files of the front
+    // the `or` makes sure to redirect all other request directly to the SPA application
+    // for example you don't want the SPA router to be interpreted as a request to the backend
+    let front_route = warp::fs::dir("www").or(warp::fs::file(format!("{}/index.html", "www")));
+
+    let routes = api_routes.or(front_route);
 
     info!("Running server");
 
@@ -120,6 +128,10 @@ fn with_atem_status(
 
 fn with_url(url: String) -> impl Filter<Extract = (String,), Error = Infallible> + Clone {
     warp::any().map(move || url.clone())
+}
+
+async fn recover_api(_: Rejection) -> Result<impl warp::Reply> {
+    Ok(warp::http::StatusCode::NOT_FOUND)
 }
 
 async fn send_status(
