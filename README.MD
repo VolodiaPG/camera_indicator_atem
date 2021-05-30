@@ -191,15 +191,15 @@ Project Link: [https://github.com/VolodiaPG/camera_indicator_atem](https://githu
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/VolodiaPG/repo.svg?style=for-the-badge
-[contributors-url]: https://github.com/VolodiaPG/repo/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/VolodiaPG/repo.svg?style=for-the-badge
-[forks-url]: https://github.com/VolodiaPG/repo/network/members
-[stars-shield]: https://img.shields.io/github/stars/VolodiaPG/repo.svg?style=for-the-badge
-[stars-url]: https://github.com/VolodiaPG/repo/stargazers
-[issues-shield]: https://img.shields.io/github/issues/VolodiaPG/repo.svg?style=for-the-badge
-[issues-url]: https://github.com/VolodiaPG/repo/issues
-[license-shield]: https://img.shields.io/github/license/VolodiaPG/repo.svg?style=for-the-badge
-[license-url]: https://github.com/VolodiaPG/repo/blob/master/LICENSE
+[contributors-shield]: https://img.shields.io/github/contributors/VolodiaPG/camera_indicator_atem.svg?style=for-the-badge
+[contributors-url]: https://github.com/VolodiaPG/camera_indicator_atem/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/VolodiaPG/camera_indicator_atem.svg?style=for-the-badge
+[forks-url]: https://github.com/VolodiaPG/camera_indicator_atem/network/members
+[stars-shield]: https://img.shields.io/github/stars/VolodiaPG/camera_indicator_atem.svg?style=for-the-badge
+[stars-url]: https://github.com/VolodiaPG/camera_indicator_atem/stargazers
+[issues-shield]: https://img.shields.io/github/issues/VolodiaPG/camera_indicator_atem.svg?style=for-the-badge
+[issues-url]: https://github.com/VolodiaPG/camera_indicator_atem/issues
+[license-shield]: https://img.shields.io/github/license/VolodiaPG/camera_indicator_atem.svg?style=for-the-badge
+[license-url]: https://github.com/VolodiaPG/camera_indicator_atem/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/volodia-parol-guarino/
