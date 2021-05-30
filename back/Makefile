@@ -30,6 +30,9 @@ serve:
 prod:
 	cargo build --target $(TARGET) --release
 	@echo "Executable is at target/$(TARGET)/release"
+	cp -r 8_5_3 target/$(TARGET)/release
+	cp atem.ps1 target/$(TARGET)/release
+	@echo "Copied atem script near the executable. THIS SCRIPT AND ITS DIRECTORY 8_5_3 MUST STAY WITH IT"
 	cp -r www target/$(TARGET)/release
 	@echo "Copied www dir near the executable. THIS DIRECTORY MUST STAY WITH IT"
 
