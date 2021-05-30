@@ -1,3 +1,5 @@
+TARGET ?= x86_64-pc-windows-gnu
+
 build:
 	@cargo build
 
@@ -24,5 +26,8 @@ dev:
 
 serve: 
 	cargo run -- --atem-script .\atem-test.ps1 --ip 192.168.137.1 --port 8000
+
+prod:
+	cargo build --target $(TARGET) --release
 
 .PHONY: build test docs style-check lint

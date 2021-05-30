@@ -29,3 +29,16 @@ curl -X POST 'http://localhost:8000/publish' \
 
 To start the ATEM, the script `atem.ps1` needs to be called from and admin powershell using the command `powershell -Command .\atem.ps1` (type this inside the powershell). it executes powershell to recreate a new environment.
 
+## Compile for release
+
+1. Add the wanted targets
+    ```sh
+    rustup target add x86_64-pc-windows-gnu
+    ```
+2. Compile the wanted targets
+    ```sh
+    cd..
+    make prod
+    ```
+3. Retrieve the file at `target/x86_64-pc-windows-gnu/release`
+
