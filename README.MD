@@ -166,7 +166,7 @@ Contributions are what make the open source community such an amazing place to b
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
-> Note: A part of the Backend is under Mario's MIT License. The modifications made from that point are under mine.
+> Note: A part of the Backend is under Mario Zupan's MIT License. The modifications made from that point are under mine.
 
 
 
