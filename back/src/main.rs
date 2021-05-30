@@ -37,8 +37,9 @@ pub struct AtemCameraStatusData {
 /// Start a server that will update regularly the status of the atem's camera.
 /// Connect the related client to it to see the display in pseudo realtime
 struct Opts {
-    /// Ip address of this server
-    #[structopt(short, long, default_value = "127.0.0.1")]
+    /// Ip address of this server. This ip is sent to the receivers for them to connect back to the server using websockets.
+    /// Therefore it is recommended to use the ip you choose to expose to your clients (cameramen)
+    #[structopt(short, long)]
     ip: String,
     /// Port of this server
     #[structopt(short, long, default_value = "8000")]

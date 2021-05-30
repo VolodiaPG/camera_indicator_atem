@@ -77,6 +77,12 @@ This application has been developed for the InsaLive association at the INSA Ren
 
 This project is also a proof of concept regarding the technologies employed.
 
+[Here is a small article (in french) from « Le Télégramme »](https://www.letelegramme.fr/ille-et-vilaine/rennes/festival-dans-les-coulisses-du-rock-n-solex-2021-en-ligne-16-05-2021-12750646.php). You can also see the software being used on the image : on both the rightmost and leftmost computer and also on the one in front of me.
+
+Here are the two nights produced using this software :
+* <https://www.youtube.com/watch?v=E7rawN8GP1A>
+* <https://www.youtube.com/watch?v=xZzG2Ggr2TY>
+
 
 ### Built With
 
@@ -90,10 +96,18 @@ This project is also a proof of concept regarding the technologies employed.
 <!-- GETTING STARTED -->
 ## Getting Started
 
-1. Clone this repository
-   ```sh
-   git clone https://github.com/VolodiaPG/camera_indicator_atem.git
-   ```
+* Quickstart
+  1. Download the application from the [releases](https://github.com/VolodiaPG/camera_indicator_atem/releases)
+  2. Unzip
+  3. See <a href="#usage">Usage</a>
+
+* Manual
+
+  1. Clone this repository
+    ```sh
+    git clone https://github.com/VolodiaPG/camera_indicator_atem.git
+    ```
+  2. Proceed to the next instructions
 
 ### Prerequisites
 
@@ -128,12 +142,12 @@ This project is also a proof of concept regarding the technologies employed.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-[Here is a small article (in french) from « Le Télégramme »](https://www.letelegramme.fr/ille-et-vilaine/rennes/festival-dans-les-coulisses-du-rock-n-solex-2021-en-ligne-16-05-2021-12750646.php). You can also see the software being used on the image : on both the rightmost and leftmost computer and also on the one in front of me.
+Typical use is 
+```sh
+./camera_indicator_atem --ip <exposed ip>
+```
 
-Here are the two nights produced using this software :
-* <https://www.youtube.com/watch?v=E7rawN8GP1A>
-* <https://www.youtube.com/watch?v=xZzG2Ggr2TY>
-
+More can be printed using `--help`, such as the port configuration.
 
 
 <!-- ROADMAP -->

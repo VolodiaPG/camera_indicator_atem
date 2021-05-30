@@ -37,8 +37,14 @@ To start the ATEM, the script `atem.ps1` needs to be called from and admin power
     ```
 2. Compile the wanted targets
     ```sh
-    cd..
+    cd ..
     make prod
     ```
+    or for linux
+    ```sh
+    cd ..
+    make prod TARGET=x86_64-unknown-linux-gnu
+    ```
+    
 3. Retrieve the file at `target/x86_64-pc-windows-gnu/release`
 
