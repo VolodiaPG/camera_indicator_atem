@@ -142,12 +142,14 @@ Here are the two nights produced using this software :
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Typical use is 
-```sh
-./camera_indicator_atem --ip <exposed ip>
-```
+1. Typical use is 
+  ``` sh
+  ./camera_indicator_atem --ip <exposed ip>
+  ```
 
-More can be printed using `--help`, such as the port configuration.
+  More can be printed using `--help`, such as the port configuration.
+
+2. Then start the `atem.ps1` powershell script **as Administrator**. Tweaking your script execution permissions may be necessary.
 
 
 <!-- ROADMAP -->
