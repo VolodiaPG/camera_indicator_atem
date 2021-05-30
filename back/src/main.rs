@@ -37,9 +37,6 @@ pub struct AtemCameraStatusData {
 /// Start a server that will update regularly the status of the atem's camera.
 /// Connect the related client to it to see the display in pseudo realtime
 struct Opts {
-    /// Path of the script being called to get the atem status
-    #[structopt(short, long)]
-    atem_script: String,
     /// Ip address of this server
     #[structopt(short, long, default_value = "127.0.0.1")]
     ip: String,
